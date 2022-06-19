@@ -5,6 +5,7 @@ import * as dotenv from "dotenv";
 import UsersServiceInst from "./services/UserService";
 import { getRequestData } from "./utils/getRequestData";
 import { createResp, createInvalidIdResp } from "./utils/createResp";
+import { METHODS } from "./interfaces/enums";
 
 dotenv.config();
 
@@ -21,9 +22,9 @@ const requestListener = async (
   try {
     const reqArr = req.url.split("/");
     if (req.url === "/api/users" || req.url.match(/\/api\/users\/[0-9a-z-]+/)) {
-      if (req.method === "GET" && reqArr.length < 4) {
+      if (req.method === METHODS.GET && reqArr.length < 4) {
         await createResp(UsersServiceInst.getUsers.bind(UsersServiceInst), res);
-      } else if (req.method === "POST" && reqArr.length === 3) {
+      } else if (req.method === METHODS.POST && reqArr.length === 3) {
         const data = await getRequestData(req);
         if (data instanceof Object) {
           await createResp(
@@ -33,7 +34,7 @@ const requestListener = async (
             data
           );
         }
-      } else if (req.method === "GET" && reqArr.length === 4) {
+      } else if (req.method === METHODS.GET && reqArr.length === 4) {
         const userId = reqArr[3];
         if (isValidId(userId)) {
           await createResp(
@@ -44,7 +45,7 @@ const requestListener = async (
         } else {
           createInvalidIdResp(res, userId);
         }
-      } else if (req.method === "PUT" && reqArr.length === 4) {
+      } else if (req.method === METHODS.PUT && reqArr.length === 4) {
         const userId = reqArr[3];
         if (isValidId(userId)) {
           const data = await getRequestData(req);
@@ -59,7 +60,7 @@ const requestListener = async (
         } else {
           createInvalidIdResp(res, userId);
         }
-      } else if (req.method === "DELETE" && reqArr.length === 4) {
+      } else if (req.method === METHODS.DELETE && reqArr.length === 4) {
         const userId = reqArr[3];
         if (isValidId(userId)) {
           await createResp(
@@ -89,8 +90,4 @@ server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-//  {
-//   "username": "Sasha",
-//   "age": 24,
-//   "hobbies": ["music"],
-// }
+export default server;
