@@ -6,16 +6,20 @@ export const getRequestData = (
   request: IncomingMessage
 ): Promise<ICandidate | string> => {
   return new Promise((resolve, reject) => {
-    let body = "";
-    request.on("data", (chunk: Buffer) => {
-      body += chunk.toString();
-    });
-    request.on("end", () => {
-      if (request.headers["content-type"] === "application/json") {
-        resolve(JSON.parse(body));
-      } else {
-        resolve(body);
-      }
-    });
+    try {
+      let body = "";
+      request.on("data", (chunk: Buffer) => {
+        body += chunk.toString();
+      });
+      request.on("end", () => {
+        if (request.headers["content-type"] === "application/json") {
+          resolve(JSON.parse(body));
+        } else {
+          resolve(body);
+        }
+      });
+    } catch (err) {
+      reject(new Error("Problems with server"));
+    }
   });
 };
